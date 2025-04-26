@@ -1,27 +1,70 @@
+# import os
+# import pandas as pd
+# from sklearn.model_selection import train_test_split
+# import yaml
+
+# test_size = yaml.safe_load(open('params.yaml','r'))['data_ingestion']['test_size']
+
+# # Load dataset
+# url = 'https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv'
+# df = pd.read_csv(url)
+
+# # Drop unnecessary column
+# df.drop(columns=['tweet_id'], inplace=True)
+
+# # Filter for binary classification and encode labels
+# final_df = df[df['sentiment'].isin(['happiness', 'sadness'])].copy()
+# final_df['sentiment'] = final_df['sentiment'].replace({'happiness': 1, 'sadness': 0})
+
+# # Split the data
+# train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=42)
+
+# # Create directory if it doesn't exist
+# data_path = os.path.join('data', 'raw')
+# os.makedirs(data_path, exist_ok=True)
+
+# # Save to CSV
+# train_data.to_csv(os.path.join(data_path, "train.csv"), index=False)
+# test_data.to_csv(os.path.join(data_path, "test.csv"), index=False)
+
+# print(f"Train and test data saved in: {data_path}")
+
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import yaml
 
-# Load dataset
-url = 'https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv'
-df = pd.read_csv(url)
+def load_config(path='params.yaml'):
+    with open(path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config['data_ingestion']['test_size']
 
-# Drop unnecessary column
-df.drop(columns=['tweet_id'], inplace=True)
+def load_dataset(url):
+    return pd.read_csv(url)
 
-# Filter for binary classification and encode labels
-final_df = df[df['sentiment'].isin(['happiness', 'sadness'])].copy()
-final_df['sentiment'] = final_df['sentiment'].replace({'happiness': 1, 'sadness': 0})
+def preprocess_data(df):
+    df = df.drop(columns=['tweet_id'])
+    df = df[df['sentiment'].isin(['happiness', 'sadness'])].copy()
+    df['sentiment'] = df['sentiment'].replace({'happiness': 1, 'sadness': 0})
+    return df
 
-# Split the data
-train_data, test_data = train_test_split(final_df, test_size=0.2, random_state=42)
+def split_data(df, test_size):
+    return train_test_split(df, test_size=test_size, random_state=42)
 
-# Create directory if it doesn't exist
-data_path = os.path.join('data', 'raw')
-os.makedirs(data_path, exist_ok=True)
+def save_data(train_df, test_df, output_dir='data/raw'):
+    os.makedirs(output_dir, exist_ok=True)
+    train_df.to_csv(os.path.join(output_dir, 'train.csv'), index=False)
+    test_df.to_csv(os.path.join(output_dir, 'test.csv'), index=False)
+    print(f"Train and test data saved in: {output_dir}")
 
-# Save to CSV
-train_data.to_csv(os.path.join(data_path, "train.csv"), index=False)
-test_data.to_csv(os.path.join(data_path, "test.csv"), index=False)
+def main():
+    test_size = load_config()
+    url = 'https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv'
+    
+    df = load_dataset(url)
+    df = preprocess_data(df)
+    train_df, test_df = split_data(df, test_size)
+    save_data(train_df, test_df)
 
-print(f"Train and test data saved in: {data_path}")
+if __name__ == "__main__":
+    main()

@@ -1,1 +1,6 @@
-/model.pkl
+/data/raw/
+/data/features/
+/data/models/
+/data/processed
+/data/reports
+/data/models
