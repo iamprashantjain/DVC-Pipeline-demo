@@ -98,7 +98,7 @@ def main():
     url = 'https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv'
 
     df = load_dataset(url)
-    df = df.sample(100)
+    df = df.sample(200)
     df = preprocess_data(df)
     train_df, test_df = split_data(df, test_size)
     save_data(train_df, test_df)

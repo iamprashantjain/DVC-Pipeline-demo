@@ -24,3 +24,16 @@
 2025-04-26 17:49:57,292 [INFO] Train data saved to data/raw\train.csv
 2025-04-26 17:49:57,292 [INFO] Test data saved to data/raw\test.csv
 2025-04-26 17:49:57,292 [INFO] Data ingestion pipeline completed successfully.
+2025-04-26 17:54:16,065 [INFO] Starting data ingestion pipeline...
+2025-04-26 17:54:16,081 [INFO] Loading configuration from params.yaml...
+2025-04-26 17:54:16,081 [INFO] Test size loaded: 0.3
+2025-04-26 17:54:16,135 [INFO] Loading dataset from URL: https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv
+2025-04-26 17:54:17,458 [INFO] Dataset loaded with shape: (40000, 3)
+2025-04-26 17:54:17,505 [INFO] Starting preprocessing...
+2025-04-26 17:54:17,505 [INFO] Preprocessing complete. Rows before: 200, after filtering: 52
+2025-04-26 17:54:17,536 [INFO] Splitting data with test size = 0.3
+2025-04-26 17:54:17,584 [INFO] Train set size: (36, 2), Test set size: (16, 2)
+2025-04-26 17:54:17,584 [INFO] Saving train and test data to 'data/raw'...
+2025-04-26 17:54:17,952 [INFO] Train data saved to data/raw\train.csv
+2025-04-26 17:54:17,998 [INFO] Test data saved to data/raw\test.csv
+2025-04-26 17:54:18,025 [INFO] Data ingestion pipeline completed successfully.
