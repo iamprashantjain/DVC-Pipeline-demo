@@ -90,57 +90,53 @@
 
 
 import os
-import numpy as np
-import pandas as pd
 import re
 import string
+import numpy as np
+import pandas as pd
 import nltk
+import logging
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-# Download required resources for nltk
+# Download NLTK resources
 nltk.download('wordnet')
 nltk.download('stopwords')
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("data_transformation.log"),
+        logging.StreamHandler()
+    ]
+)
 
 def lemmatize_text(text):
-    """Lemmatize the words in the input text."""
     lemmatizer = WordNetLemmatizer()
-    text = text.split()
-    return " ".join([lemmatizer.lemmatize(word) for word in text])
-
+    words = text.split()
+    return " ".join([lemmatizer.lemmatize(word) for word in words])
 
 def remove_stop_words(text):
-    """Remove stop words from the input text."""
     stop_words = set(stopwords.words('english'))
-    return " ".join([word for word in str(text).split() if word not in stop_words])
-
+    return " ".join([word for word in text.split() if word not in stop_words])
 
 def remove_numbers(text):
-    """Remove numbers from the input text."""
     return "".join([char for char in text if not char.isdigit()])
 
-
 def lower_case(text):
-    """Convert all characters in the text to lowercase."""
-    text = text.split()
-    return " ".join([word.lower() for word in text])
-
+    return text.lower()
 
 def remove_punctuations(text):
-    """Remove punctuation from the text."""
     text = re.sub(f"[{re.escape(string.punctuation)}]", " ", text)
     return re.sub('\s+', ' ', text).strip()
 
-
 def remove_urls(text):
-    """Remove URLs from the text."""
-    url_pattern = re.compile(r'https://\S+|www\.\S+')
+    url_pattern = re.compile(r'https?://\S+|www\.\S+')
     return url_pattern.sub(r'', text)
 
-
 def normalize_text(text):
-    """Apply all text preprocessing functions."""
     text = lower_case(text)
     text = remove_stop_words(text)
     text = remove_numbers(text)
@@ -149,50 +145,47 @@ def normalize_text(text):
     text = lemmatize_text(text)
     return text
 
-
 def load_data(train_path, test_path):
-    """Load the train and test data."""
+    logging.info(f"Loading data from {train_path} and {test_path}")
     train_data = pd.read_csv(train_path)
     test_data = pd.read_csv(test_path)
+    logging.info(f"Train shape: {train_data.shape}, Test shape: {test_data.shape}")
     return train_data, test_data
 
-
 def save_data(train_data, test_data, output_path="data/processed"):
-    """Save the processed data to disk."""
+    logging.info(f"Saving processed data to {output_path}")
     os.makedirs(output_path, exist_ok=True)
     train_data.to_csv(os.path.join(output_path, "train.csv"), index=False)
     test_data.to_csv(os.path.join(output_path, "test.csv"), index=False)
-
+    logging.info("Processed data saved successfully.")
 
 def remove_small_sentences(df):
-    for i in range(len(df)):
-        if len(df['content'].iloc[i].split()) < 3:
-            df['content'].iloc[i] = np.nan
+    before = df.shape[0]
+    df.loc[df['content'].str.split().str.len() < 3, 'content'] = np.nan
+    after = df['content'].notna().sum()
+    logging.info(f"Removed {before - after} short sentences (less than 3 words)")
     return df
 
 def preprocess_data(train_data, test_data):
-    """Preprocess the data by normalizing the content and removing small sentences."""
-    train_data['content'] = train_data['content'].apply(normalize_text)
-    test_data['content'] = test_data['content'].apply(normalize_text)
+    logging.info("Starting preprocessing of train and test data...")
+    train_data['content'] = train_data['content'].astype(str).apply(normalize_text)
+    test_data['content'] = test_data['content'].astype(str).apply(normalize_text)
     train_data = remove_small_sentences(train_data)
     test_data = remove_small_sentences(test_data)
+    logging.info("Preprocessing complete.")
     return train_data, test_data
 
-
 def main():
-    # File paths
+    logging.info("Data transformation pipeline started.")
+    
     train_file = "data/raw/train.csv"
     test_file = "data/raw/test.csv"
-    
-    # Load data
+
     train_data, test_data = load_data(train_file, test_file)
-    
-    # Preprocess the data
     train_data, test_data = preprocess_data(train_data, test_data)
-    
-    # Save the processed data
     save_data(train_data, test_data)
 
+    logging.info("Data transformation pipeline completed successfully.")
 
 if __name__ == "__main__":
     main()

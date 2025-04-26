@@ -1,0 +1,12 @@
+2025-04-26 16:55:16,809 [INFO] Model training pipeline started
+2025-04-26 16:55:16,809 [INFO] Loading configuration from params.yaml
+2025-04-26 16:55:16,809 [INFO] Loading training data from data/features/train.csv
+2025-04-26 16:55:17,513 [INFO] Training data shape: (7261, 201)
+2025-04-26 16:55:17,547 [INFO] Loading test data from data/features/test.csv
+2025-04-26 16:55:17,954 [INFO] Test data shape: (3113, 201)
+2025-04-26 16:55:17,970 [INFO] Preprocessing data: splitting features and labels
+2025-04-26 16:55:18,009 [INFO] Training XGBoost model
+2025-04-26 16:55:28,705 [INFO] Model training completed
+2025-04-26 16:55:28,705 [INFO] Saving model to data/models/model.pkl
+2025-04-26 16:55:28,721 [INFO] Model saved successfully
+2025-04-26 16:55:28,737 [INFO] Model training pipeline finished
